@@ -37,9 +37,14 @@ public class MainActivity extends AppCompatActivity {
     public void iniSetCheckable(){
         if (editMemory.getLastStack().size()==0){
             back.setClickable(false);
+        }else {
+            back.setClickable(true);
         }
         if (editMemory.getNextStack().size()==0){
             nextBack.setClickable(false);
+        }else {
+            nextBack.setClickable(true);
+
         }
     }
 }

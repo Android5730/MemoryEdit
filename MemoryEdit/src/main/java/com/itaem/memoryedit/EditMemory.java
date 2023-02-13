@@ -31,7 +31,7 @@ public class EditMemory {
                 if (!(lastStack.isEmpty())&&count>0&&after==0){
                     lastStack.push(new MemoryEditBean(s.toString().substring(start,start+count),start,start+count,-1));
                 }else if (count>0&&after>0){
-                    // 修改
+                    // 修改前文本
                     lastStack.push(new MemoryEditBean(s.toString().substring(start, start + count), start, start + after, 1));
                 }
 
@@ -42,13 +42,12 @@ public class EditMemory {
                 if (lastFlag||nextFlag){
                     return;
                 }
-
                 if (before==0&&count>0){
                     // 新增
                     lastStack.push(new MemoryEditBean(s.toString().substring(start,count+start),start,start+count,0));
                 }else if (before>0&&count>0){
-                    // 修改
-                    lastStack.push(new MemoryEditBean(s.toString().substring(start, count + start), start, start + count, 1));
+                    // 修改后文本
+                    lastStack.push(new MemoryEditBean(s.toString().substring(start, count + start), start, start + before, 1));
                 }
             }
             @Override
@@ -77,17 +76,24 @@ public class EditMemory {
             editText.setText(spannableStringBuilder);
             editText.setSelection(temp.getLastStart());
         }else if (temp.getState() == 1){
-            // 修改状态:
-            // 1. 同位修改
-            // 2. 少位修改
-            // 3. 多位修改
             MemoryEditBean pop = lastStack.pop();
+            nextStack.push(pop);
             spannableStringBuilder.replace(pop.getLastStart(),pop.getLastEnd(),pop.getLastEdit(),0,pop.getLastEdit().length());
             editText.setText(spannableStringBuilder);
-            editText.setSelection(pop.getLastStart()+pop.getLastEdit().length());
+            // 撤销途中：1.多->少
+            if (pop.getCount()<pop.getLastEdit().length()){
+                editText.setSelection(pop.getLastStart()+pop.getLastEdit().length());
+            }else if (pop.getCount()== pop.getLastEdit().length()){
+                // 2. 等位
+                editText.setSelection(pop.getLastEnd());
+            }else {
+                // 3. 少->多
+                editText.setSelection(pop.getLastEdit().length());
+            }
         }
         lastFlag = false;
     }
+
     // 反撤销功能
     public void rollNext(){
         nextFlag = true;
@@ -95,6 +101,7 @@ public class EditMemory {
             return;
         }
         MemoryEditBean pop = nextStack.pop();
+        // 入撤销栈
         lastStack.push(pop);
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(editText.getText());
         if (pop.getState()==-1){
@@ -109,12 +116,20 @@ public class EditMemory {
             editText.setSelection(pop.getLastEnd());
         }else if (pop.getState()==1){
             // 修改状态:
-            // 1. 同位修改
-            // 2. 少位修改
-            // 3. 多位修改
-            spannableStringBuilder.replace(pop.getLastStart(),pop.getLastEnd(),pop.getLastEdit(),0,pop.getLastEdit().length());
+            MemoryEditBean temp = nextStack.pop();
+            lastStack.push(temp);
+            spannableStringBuilder.replace(temp.getLastStart(),temp.getLastEnd(),temp.getLastEdit(),0,temp.getLastEdit().length());
             editText.setText(spannableStringBuilder);
-            editText.setSelection(pop.getLastEnd());
+            if (temp.getCount()<temp.getLastEdit().length()){
+                // 1. 多->少
+                editText.setSelection(temp.getLastEdit().length());
+            }else if (temp.getCount()==temp.getLastEdit().length()){
+                // 2. 等位修改
+                editText.setSelection(temp.getLastEnd());
+            }else {
+               // 3.少->多
+                editText.setSelection(temp.getLastStart()+temp.getLastEdit().length());
+            }
         }
         nextFlag = false;
     }

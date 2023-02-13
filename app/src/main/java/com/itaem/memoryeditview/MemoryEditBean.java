@@ -8,8 +8,6 @@ public class MemoryEditBean {
     // 修改末位置
     private int lastEnd;
     private int state;
-    private int changeEnd;
-
     public MemoryEditBean(String lastEdit, int lastStart, int lastEnd, int state) {
         this.lastEdit = lastEdit;
         this.lastStart = lastStart;
@@ -33,11 +31,7 @@ public class MemoryEditBean {
         return state;
     }
 
-    public int getChangeEnd() {
-        return changeEnd;
-    }
-
-    public void setChangeEnd(int changeEnd) {
-        this.changeEnd = changeEnd;
+    public int getCount() {
+        return lastEnd-lastStart;
     }
 }

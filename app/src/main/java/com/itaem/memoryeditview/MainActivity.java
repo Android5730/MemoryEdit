@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
             nextBack.setClickable(false);
         }else {
             nextBack.setClickable(true);
-
         }
     }
 }

@@ -13,6 +13,7 @@ public class EditMemory {
     Stack<MemoryEditBean> nextStack = new Stack<>();
     private boolean lastFlag = false;
     private boolean nextFlag = false;
+    private boolean saveFlag = false;
     // 修改缓冲
     SpannableStringBuilder spannableStringBuilder;
     private final AppCompatEditText editText;
@@ -59,7 +60,11 @@ public class EditMemory {
     public void rollBack(){
         lastFlag = true;
         if (lastStack.size() == 0){
-            return;
+            if (saveFlag){
+                saveFlag = false;
+            }else {
+                return;
+            }
         }
         MemoryEditBean temp = lastStack.pop();
         spannableStringBuilder = new SpannableStringBuilder(editText.getText());
@@ -98,7 +103,11 @@ public class EditMemory {
     public void rollNext(){
         nextFlag = true;
         if (nextStack.size() == 0){
-            return;
+            if (saveFlag){
+                saveFlag = false;
+            }else {
+                return;
+            }
         }
         MemoryEditBean pop = nextStack.pop();
         // 入撤销栈
@@ -138,6 +147,7 @@ public class EditMemory {
         // 清空栈
         lastStack.clear();
         nextStack.clear();
+        saveFlag = true;
     }
 
     public Stack<MemoryEditBean> getLastStack() {

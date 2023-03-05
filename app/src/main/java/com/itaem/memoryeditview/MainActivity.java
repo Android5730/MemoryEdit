@@ -11,26 +11,32 @@ public class MainActivity extends AppCompatActivity {
     private  EditMemory editMemory;
     private Button back;
     private Button nextBack;
+    private Button save;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         back = findViewById(R.id.backBtn);
         nextBack = findViewById(R.id.nextBtn);
+        save = findViewById(R.id.saveBtn);
         AppCompatEditText editText = findViewById(R.id.editView);
         editMemory = new EditMemory(editText);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editMemory.save();
+            }
+        });
         nextBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editMemory.rollNext();
-                iniSetCheckable();
             }
         });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editMemory.rollBack();
-                iniSetCheckable();
             }
         });
     }

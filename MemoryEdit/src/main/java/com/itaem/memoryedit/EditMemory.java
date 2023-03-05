@@ -11,9 +11,9 @@ import java.util.Stack;
 public class EditMemory {
     Stack<MemoryEditBean> lastStack = new Stack<>();
     Stack<MemoryEditBean> nextStack = new Stack<>();
-    private boolean lastFlag = false;
-    private boolean nextFlag = false;
-    private boolean saveFlag = false;
+    private boolean lastFlag = false;// 撤销标记
+    private boolean nextFlag = false;// 反撤销标记
+    private boolean saveFlag = false;// 保存标记
     // 修改缓冲
     SpannableStringBuilder spannableStringBuilder;
     private final AppCompatEditText editText;
@@ -35,7 +35,6 @@ public class EditMemory {
                     // 修改前文本
                     lastStack.push(new MemoryEditBean(s.toString().substring(start, start + count), start, start + after, 1));
                 }
-
             }
             @Override
             // start：开始位置 before：删除数量;count:新增数量
@@ -58,14 +57,14 @@ public class EditMemory {
     }
     // 撤销功能
     public void rollBack(){
-        lastFlag = true;
+/*        if (saveFlag){
+            // 恢复保存标记
+            saveFlag = false;
+        }*/
         if (lastStack.size() == 0){
-            if (saveFlag){
-                saveFlag = false;
-            }else {
-                return;
-            }
+            return;
         }
+        lastFlag = true;
         MemoryEditBean temp = lastStack.pop();
         spannableStringBuilder = new SpannableStringBuilder(editText.getText());
         nextStack.push(temp);
@@ -101,20 +100,16 @@ public class EditMemory {
 
     // 反撤销功能
     public void rollNext(){
-        nextFlag = true;
         if (nextStack.size() == 0){
-            if (saveFlag){
-                saveFlag = false;
-            }else {
-                return;
-            }
+            return;
         }
+        nextFlag = true;
         MemoryEditBean pop = nextStack.pop();
         // 入撤销栈
         lastStack.push(pop);
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(editText.getText());
         if (pop.getState()==-1){
-            //
+            // 删除
             spannableStringBuilder.delete(pop.getLastStart(),pop.getLastEnd());
             editText.setText(spannableStringBuilder);
             editText.setSelection(pop.getLastStart());
@@ -147,7 +142,6 @@ public class EditMemory {
         // 清空栈
         lastStack.clear();
         nextStack.clear();
-        saveFlag = true;
     }
 
     public Stack<MemoryEditBean> getLastStack() {

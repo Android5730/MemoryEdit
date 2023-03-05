@@ -17,7 +17,7 @@
 在app模块build.gradle下添加
 
 ```groovy
-    implementation 'com.github.Android5730:MemoryEdit:v0.0.1'
+    implementation 'com.github.Android5730:MemoryEdit:v0.0.2'
 ```
 使用：
 

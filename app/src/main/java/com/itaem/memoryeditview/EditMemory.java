@@ -59,6 +59,7 @@ public class EditMemory {
     public void rollBack(){
         lastFlag = true;
         if (lastStack.size() == 0){
+
             return;
         }
         MemoryEditBean temp = lastStack.pop();
